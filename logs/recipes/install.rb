@@ -25,3 +25,16 @@ file '/etc/logrotate.d/newrelic' do
         copytruncate
         }'
 end
+
+file '/etc/cron.hourly/logrotate' do
+ mode 0755
+ owner 'root'
+ group 'root'
+ content '#!/bin/sh
+  /usr/sbin/logrotate /etc/logrotate.conf >/dev/null 2>&1
+  EXITVALUE=$?
+  if [ $EXITVALUE != 0 ]; then
+      /usr/bin/logger -t logrotate "ALERT exited abnormally with [$EXITVALUE]"
+  fi
+  exit 0'
+end
