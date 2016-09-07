@@ -1,7 +1,7 @@
 
 # Override node the version
 default['nodejs']['engine'] = 'node'
-default['nodejs']['version'] = '4.2.2'
+default['nodejs']['version'] = '6.5.0'
 # default['nodejs']['install_method'] = 'binary'
 
 default["nodebin"]["location"] = '/usr/bin/node'
