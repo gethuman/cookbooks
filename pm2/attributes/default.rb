@@ -4,11 +4,13 @@
 #
 # Copyright 2015, Mindera
 #
-default_unless['pm2']['version'] = '0.14.7'
+default_unless['pm2']['version'] = 'latest'
 
 # set value for env vars  node[:deploy]['app'][:environment_variables]
 
-layers = node[:opsworks][:instance][:layers]
+ow = node[:opsworks]
+owi = ow[:instance]
+layers = owi[:layers]
 
 if layers.include?("api-layer")
     Chef::Log.info("** setting container to api")
