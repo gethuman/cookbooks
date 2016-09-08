@@ -1,0 +1,22 @@
+sudo: required
+dist: trusty
+
+# install the pre-release chef-dk.  Use chef-stable-precise to install the stable release
+addons:
+  apt:
+    sources:
+      - chef-current-precise
+    packages:
+      - chefdk
+
+install: echo "skip bundle install"
+
+before_script:
+  - eval "$(/opt/chefdk/bin/chef shell-init bash)"
+
+script:
+  - /opt/chefdk/embedded/bin/chef --version
+  - /opt/chefdk/embedded/bin/chef exec rubocop --version
+  - /opt/chefdk/embedded/bin/chef exec foodcritic --version
+  - /opt/chefdk/embedded/bin/chef exec rake style
+  - /opt/chefdk/embedded/bin/chef exec rake spec

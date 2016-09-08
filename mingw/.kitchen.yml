@@ -1,0 +1,27 @@
+---
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
+# Uncomment the following verifier to leverage Inspec instead of Busser (the
+# default verifier)
+# verifier:
+#   name: inspec
+
+platforms:
+  - name: windows-2012r2
+    driver_config:
+      box: chef/windows-server-2012r2-standard
+
+suites:
+  - name: tools32
+    run_list:
+      - recipe[mingw_tdm_install::install32]
+  - name: tools64
+    run_list:
+      - recipe[mingw_tdm_install::install64]
+  - name: msys2_tools64
+    run_list:
+      - recipe[mingw_msys2_install::default]
