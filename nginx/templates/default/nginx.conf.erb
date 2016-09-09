@@ -1,127 +1,46 @@
-
-# see docs here: http://wiki.nginx.org/DirectiveIndex
-
-# no user set for now
-# user <%= node[:nginx][:user] %>;
-
-# set to 1 since we only have 1 CPU
+user <%= node[:nginx][:user] %>;
 worker_processes  <%= node[:nginx][:worker_processes] %>;
 
-# error logs sent to /var/log/nginx
 error_log  <%= node[:nginx][:log_dir] %>/error.log;
-
-# used to reload the config: kill -HUP `cat /var/log/nginx.pid`
 pid        <%= node[:nginx][:pid_file] %>;
 
-# set to 4096 for now
 events {
   worker_connections  <%= node[:nginx][:worker_connections] %>;
 }
 
 http {
-    include       <%= node[:nginx][:dir] %>/mime.types;
-    default_type  application/octet-stream;
+  include       <%= node[:nginx][:dir] %>/mime.types;
+  default_type  application/octet-stream;
 
-    # access_log <%= node[:nginx][:log_dir] %>/access.log;
-    access_log off;
+  <% node[:nginx][:log_format].each do |name, format| %>
+  log_format <%= name %> <%= format %>;
+  <% end %>
 
-    sendfile on;
-    tcp_nodelay on;
+  access_log	<%= node[:nginx][:log_dir] %>/access.log;
 
-    <% node[:nginx][:log_format].each do |name, format| %>
-    log_format <%= name %> <%= format %>;
-    <% end %>
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
 
-    gzip  <%= node[:nginx][:gzip] %>;
-    gzip_static  <%= node[:nginx][:gzip_static] %>;
-    <% if node[:nginx][:gzip] == "on" %>
-    gzip_http_version <%= node[:nginx][:gzip_http_version] %>;
-    gzip_comp_level <%= node[:nginx][:gzip_comp_level] %>;
-    gzip_proxied <%= node[:nginx][:gzip_proxied] %>;
-    gzip_types <%= node[:nginx][:gzip_types].join(' ') %>;
-    gzip_vary <%= node[:nginx][:gzip_vary] %>;
-    gzip_disable "<%= node[:nginx][:gzip_disable] %>";
-    <% end %>
+  <% if node[:nginx][:keepalive] == "on" %>
+  keepalive_timeout  <%= node[:nginx][:keepalive_timeout] %>;
+  <% end %>
 
-    # set larger if user can upload large images in the future
-    client_max_body_size <%= node[:nginx][:client_max_body_size] %>;
+  gzip  <%= node[:nginx][:gzip] %>;
+  gzip_static  <%= node[:nginx][:gzip_static] %>;
+  <% if node[:nginx][:gzip] == "on" %>
+  gzip_http_version <%= node[:nginx][:gzip_http_version] %>;
+  gzip_comp_level <%= node[:nginx][:gzip_comp_level] %>;
+  gzip_proxied <%= node[:nginx][:gzip_proxied] %>;
+  gzip_types <%= node[:nginx][:gzip_types].join(' ') %>;
+  gzip_vary <%= node[:nginx][:gzip_vary] %>;
+  gzip_disable "<%= node[:nginx][:gzip_disable] %>";
+  <% end %>
 
-    server_names_hash_bucket_size <%= node[:nginx][:server_names_hash_bucket_size] %>;
+  client_max_body_size <%= node[:nginx][:client_max_body_size] %>;
 
-    include <%= node[:nginx][:dir] %>/conf.d/*.conf;
-    include <%= node[:nginx][:dir] %>/sites-enabled/*;
+  server_names_hash_bucket_size <%= node[:nginx][:server_names_hash_bucket_size] %>;
 
-    #Caching
-    #proxy_redirect off;
-    #proxy_http_version 1.1;
-    #proxy_cache_min_uses 5;
-    #proxy_cache_valid any 1m;
-    #proxy_set_header Host $host;
-    #proxy_cache_methods GET HEAD;
-    #proxy_cache_bypass $http_upgrade;
-    #proxy_set_header Connection 'upgrade';
-    #proxy_cache_key sfs$request_uri$scheme;
-
-    #proxy_cache_path <%= node[:nginx][:dir] %>/cache keys_zone=one:10m keys_zone=czone:32m
-                   #loader_threshold=300 loader_files=200
-                   #levels=1:2 max_size=256m inactive=1m;
-
-    # SSL
-    #ssl_certificate /some/location/sillyfacesociety.com.bundle.crt;
-    #ssl_certificate_key /some/location/sillyfacesociety.com.key;
-    #ssl_protocols        SSLv3 TLSv1;
-    #ssl_ciphers HIGH:!aNULL:!MD5;
-
-    #server {
-    #  listen 443 ssl;
-    #  ssl_protocols SSLv3 TLSv1;
-    #  ssl_ciphers HIGH:!aNULL:!MD5;
-    #  ssl_certificate_key /some/location/sillyfacesociety.com.key;
-    #  ssl_certificate /some/location/sillyfacesociety.com.bundle.crt;
-    #}
-
-    # proxy all requests from 80 to 8888
-    server {
-
-        # http://nginx.org/en/docs/http/server_names.html
-        listen 80 default_server;
-
-        # not sure if we need this
-        #server_name  gethuman.com;
-
-        location / {
-            proxy_pass http://127.0.0.1:8888;
-            proxy_redirect off;
-            proxy_buffering off;
-            proxy_set_header        Host            $http_host;
-            proxy_set_header        X-Real-IP       $remote_addr;
-            proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
-
-            # proxy_set_header Upgrade $http_upgrade;
-            # proxy_set_header X-Real-IP $remote_addr;
-            # proxy_set_header X-Forwarder-For $proxy_add_x_forwarded_for;
-            # proxy_set_header X-NginX-Proxy true;
-            # add_header X-Proxy-Cache $upstream_cache_status;
-        }
-    }
-
-    # may enable this later, but likely will try to do redirects in app itself
-    #server {
-    #    listen       80;
-    #    server_name  *.gethuman.com;
-    #    return 302  https://gethuman.com$request_uri;
-    #}
-
-    # this will be used for page caching later
-    # specific routes
-    # <% (@cached_routes || []).each do |route| %>
-    #location <%= route %> {
-    #    add_header            X-Cache-Status $upstream_cache_status;
-    #    proxy_cache           "static-cache";
-    #    proxy_cache_valid     200 3600m;
-    #    proxy_cache_min_uses  1;
-    #    proxy_cache_use_stale error timeout invalid_header http_500;
-    #    proxy_ignore_headers  "X-Accel-Expires" "Expires" "Cache-Control" "Set-Cookie";
-    #}
-    # <% end %>
+  include <%= node[:nginx][:dir] %>/conf.d/*.conf;
+  include <%= node[:nginx][:dir] %>/sites-enabled/*;
 }
