@@ -8,9 +8,7 @@ default_unless['pm2']['version'] = 'latest'
 
 # set value for env vars  node[:deploy]['app'][:environment_variables]
 
-ow = node[:opsworks]
-owi = ow[:instance]
-layers = owi[:layers]
+layers = node[:opsworks][:instance][:layers]
 
 if layers.include?("api-layer")
     Chef::Log.info("** setting container to api")
