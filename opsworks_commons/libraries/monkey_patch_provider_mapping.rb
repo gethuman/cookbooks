@@ -26,13 +26,13 @@ class Chef
       end
 
       def patch_platform(pf)
-        #pf[:redhat][:default][:service] = Chef::Provider::Service::Systemd
-        #pf[:redhat]["< 7"] ||= {}
-        #pf[:redhat]["< 7"][:service] = Chef::Provider::Service::Redhat
+        pf[:redhat][:default][:service] = Chef::Provider::Service::Systemd
+        pf[:redhat]["< 7"] ||= {}
+        pf[:redhat]["< 7"][:service] = Chef::Provider::Service::Redhat
 
-        #pf[:centos][:default][:service] = Chef::Provider::Service::Systemd
-        #pf[:centos]["< 7"] ||= {}
-        #pf[:centos]["< 7"][:service] = Chef::Provider::Service::Redhat
+        pf[:centos][:default][:service] = Chef::Provider::Service::Systemd
+        pf[:centos]["< 7"] ||= {}
+        pf[:centos]["< 7"][:service] = Chef::Provider::Service::Redhat
 
         pf
       end
