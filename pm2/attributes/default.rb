@@ -8,7 +8,8 @@ default_unless['pm2']['version'] = 'latest'
 
 # set value for env vars  node[:deploy]['app'][:environment_variables]
 
-layers = node[:opsworks][:instance][:layers]
+instance = search("aws_opsworks_instance", "self:true").first # this gets the databag for the instance
+layers = instance['role'] # the attribute formerly known as 'layers' via opsworks is now found as role in the opsworks instance
 
 if layers.include?("api-layer")
     Chef::Log.info("** setting container to api")
