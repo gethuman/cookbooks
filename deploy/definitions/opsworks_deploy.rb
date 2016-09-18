@@ -1,6 +1,8 @@
 define :opsworks_deploy do
   application = params[:app]
   deploy = params[:deploy_data]
+  instance = search("aws_opsworks_instance", "self:true").first
+  layers = instance['role']
 
   directory "#{deploy[:deploy_to]}" do
     group deploy[:group]
@@ -78,8 +80,8 @@ define :opsworks_deploy do
       symlinks(deploy[:symlinks]) unless deploy[:symlinks].nil?
       action deploy[:action]
 
-      if deploy[:application_type] == 'rails' && node[:opsworks][:instance][:layers].include?('rails-app')
-        restart_command "sleep #{deploy[:sleep_before_restart]} && #{node[:opsworks][:rails_stack][:restart_command]}"
+      if deploy[:application_type] == 'rails' && layers[:instance][:layers].include?('rails-app')
+        restart_command "sleep #{deploy[:sleep_before_restart]} && #{instance[:rails_stack][:restart_command]}"
       end
 
       case deploy[:scm][:scm_type].to_s
@@ -139,8 +141,8 @@ define :opsworks_deploy do
             variables(
               :database => node[:deploy][application][:database],
               :memcached => node[:deploy][application][:memcached],
-              :layers => node[:opsworks][:layers],
-              :stack_name => node[:opsworks][:stack][:name]
+              :layers => layers,
+              :stack_name => instance[:stack][:name]
             )
             only_if do
               File.exists?("#{node[:deploy][application][:deploy_to]}/shared/config")
@@ -171,8 +173,8 @@ define :opsworks_deploy do
     end
   end
 
-  if deploy[:application_type] == 'rails' && node[:opsworks][:instance][:layers].include?('rails-app')
-    case node[:opsworks][:rails_stack][:name]
+  if deploy[:application_type] == 'rails' && layers.include?('rails-app')
+    case instance[:rails_stack][:name]
 
     when 'apache_passenger'
       passenger_web_app do

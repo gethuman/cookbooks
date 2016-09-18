@@ -3,6 +3,8 @@
 # Recipe:: rails-undeploy
 
 include_recipe 'deploy'
+instance = search("aws_opsworks_instance", "self:true").first
+layers = instance['role']
 
 node[:deploy].each do |application, deploy|
   if deploy[:application_type] != 'rails'
@@ -10,10 +12,10 @@ node[:deploy].each do |application, deploy|
     next
   end
 
-  case node[:opsworks][:rails_stack][:name]
+  case instance[:rails_stack][:name]
   when 'apache_passenger'
-    if node[:opsworks][:rails_stack][:service]
-      include_recipe "#{node[:opsworks][:rails_stack][:service]}::service"
+    if instance[:rails_stack][:service]
+      include_recipe "#{instance[:rails_stack][:service]}::service"
     end
 
     link "#{node[:apache][:dir]}/sites-enabled/#{application}.conf" do
@@ -21,7 +23,7 @@ node[:deploy].each do |application, deploy|
       only_if do
         ::File.exists?("#{node[:apache][:dir]}/sites-enabled/#{application}.conf")
       end
-      notifies :restart, "service[#{node[:opsworks][:rails_stack][:service]}]"
+      notifies :restart, "service[#{instance[:rails_stack][:service]}]"
     end
 
     file "#{node[:apache][:dir]}/sites-available/#{application}.conf" do
@@ -29,7 +31,7 @@ node[:deploy].each do |application, deploy|
       only_if do
         ::File.exists?("#{node[:apache][:dir]}/sites-available/#{application}.conf")
       end
-      notifies :restart, "service[#{node[:opsworks][:rails_stack][:service]}]"
+      notifies :restart, "service[#{instance[:rails_stack][:service]}]"
     end
 
   when 'nginx_unicorn'

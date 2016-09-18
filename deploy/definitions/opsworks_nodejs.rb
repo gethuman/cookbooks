@@ -1,6 +1,8 @@
 define :opsworks_nodejs do
   deploy = params[:deploy_data]
   application = params[:app]
+  instance = search("aws_opsworks_instance", "self:true").first
+  layers = instance['role']
 
   service 'monit' do
     action :nothing
@@ -18,7 +20,7 @@ define :opsworks_nodejs do
     mode '0660'
     owner deploy[:user]
     group deploy[:group]
-    variables(:database => deploy[:database], :memcached => deploy[:memcached], :layers => node[:opsworks][:layers])
+    variables(:database => deploy[:database], :memcached => deploy[:memcached], :layers => layers)
   end
 
   template "#{node.default[:monit][:conf_dir]}/node_web_app-#{application}.monitrc" do

@@ -30,8 +30,9 @@ default[:opsworks][:deploy_keep_releases] = 5
 default[:opsworks][:deploy_chef_provider] = 'Timestamped'
 
 valid_deploy_chef_providers = ['Timestamped', 'Revision', 'Branch']
-unless valid_deploy_chef_providers.include?(node[:opsworks][:deploy_chef_provider])
-  raise "Invalid deploy_chef_provider: #{node[:opsworks][:deploy_chef_provider]}. Valid providers: #{valid_deploy_chef_providers.join(', ')}."
+instance = search("aws_opsworks_instance", "self:true").first
+unless valid_deploy_chef_providers.include?(instance[:deploy_chef_provider])
+  raise "Invalid deploy_chef_provider: #{instance[:deploy_chef_provider]}. Valid providers: #{valid_deploy_chef_providers.join(', ')}."
 end
 
 # the $HOME of the deploy user can be overwritten with this variable.
@@ -49,14 +50,14 @@ default[:opsworks][:rails][:ignore_bundler_groups] = ['test', 'development']
 default[:deploy] = {}
 node[:deploy].each do |application, deploy|
   default[:deploy][application][:deploy_to] = "/srv/www/#{application}"
-  default[:deploy][application][:chef_provider] = node[:deploy][application][:chef_provider] ? node[:deploy][application][:chef_provider] : node[:opsworks][:deploy_chef_provider]
+  default[:deploy][application][:chef_provider] = node[:deploy][application][:chef_provider] ? node[:deploy][application][:chef_provider] : instance[:deploy_chef_provider]
   unless valid_deploy_chef_providers.include?(node[:deploy][application][:chef_provider])
     raise "Invalid chef_provider '#{node[:deploy][application][:chef_provider]}' for app '#{application}'. Valid providers: #{valid_deploy_chef_providers.join(', ')}."
   end
-  default[:deploy][application][:keep_releases] = node[:deploy][application][:keep_releases] ? node[:deploy][application][:keep_releases] : node[:opsworks][:deploy_keep_releases]
+  default[:deploy][application][:keep_releases] = node[:deploy][application][:keep_releases] ? node[:deploy][application][:keep_releases] : instance[:deploy_keep_releases]
   default[:deploy][application][:current_path] = "#{node[:deploy][application][:deploy_to]}/current"
   default[:deploy][application][:document_root] = ''
-  default[:deploy][application][:ignore_bundler_groups] = node[:opsworks][:rails][:ignore_bundler_groups]
+  default[:deploy][application][:ignore_bundler_groups] = instance[:rails][:ignore_bundler_groups]
   if deploy[:document_root]
     default[:deploy][application][:absolute_document_root] = "#{default[:deploy][application][:current_path]}/#{deploy[:document_root]}/"
   else
@@ -80,11 +81,11 @@ node[:deploy].each do |application, deploy|
   end
   default[:deploy][application][:rails_env] = 'production'
   default[:deploy][application][:action] = 'deploy'
-  default[:deploy][application][:user] = node[:opsworks][:deploy_user][:user]
-  default[:deploy][application][:group] = node[:opsworks][:deploy_user][:group]
-  default[:deploy][application][:shell] = node[:opsworks][:deploy_user][:shell]
-  default[:deploy][application][:home] = if !node[:opsworks][:deploy_user][:home].nil?
-                                           node[:opsworks][:deploy_user][:home]
+  default[:deploy][application][:user] = instance[:deploy_user][:user]
+  default[:deploy][application][:group] = instance[:deploy_user][:group]
+  default[:deploy][application][:shell] = instance[:deploy_user][:shell]
+  default[:deploy][application][:home] = if !instance[:deploy_user][:home].nil?
+                                           instance[:deploy_user][:home]
                                          elsif self[:passwd] && self[:passwd][self[:deploy][application][:user]] && self[:passwd][self[:deploy][application][:user]][:dir]
                                            self[:passwd][self[:deploy][application][:user]][:dir]
                                          else
