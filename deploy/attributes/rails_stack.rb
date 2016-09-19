@@ -15,8 +15,8 @@
 ###
 
 default[:opsworks][:rails_stack][:name] = "apache_passenger"
-instance = search("aws_opsworks_instance", "self:true").first
-case instance[:rails_stack][:name]
+stack = search("aws_opsworks_stack").first
+case stack[:rails_stack][:name]
 when "apache_passenger"
   normal[:opsworks][:rails_stack][:recipe] = "passenger_apache2::rails"
   normal[:opsworks][:rails_stack][:needs_reload] = true
