@@ -28,6 +28,6 @@ state_file = /var/awslogs/state/agent-state
 #
 [<%= @host %>]
 #datetime_format = [%Y-%m-%d %H:%M:%S]
-log_group_name = <%= node[:opsworks][:stack][:name].gsub(' ','_') %>
+log_group_name = <%= @stackname.gsub(' ','_') %>
 file = <%= node[:cwlogs][:logfile] %>
-log_stream_name = <%= instance[:instance][:hostname] %>
+log_stream_name = <%= @host %>
