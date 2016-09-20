@@ -29,11 +29,12 @@ default[:opsworks][:deploy_keep_releases] = 5
 # Deploy provider can also be set at application level.
 default[:opsworks][:deploy_chef_provider] = 'Timestamped'
 
-valid_deploy_chef_providers = ['Timestamped', 'Revision', 'Branch']
-instance = search("aws_opsworks_instance", "self:true").first
-unless valid_deploy_chef_providers.include?(instance[:deploy_chef_provider])
-  raise "Invalid deploy_chef_provider: #{instance[:deploy_chef_provider]}. Valid providers: #{valid_deploy_chef_providers.join(', ')}."
-end
+# deploy_chef_provider doesn't appear to be a supported attribute in chef12. Commenting out for testing
+# valid_deploy_chef_providers = ['Timestamped', 'Revision', 'Branch']
+# instance = search("aws_opsworks_instance", "self:true").first
+# unless valid_deploy_chef_providers.include?(instance[:deploy_chef_provider])
+#   raise "Invalid deploy_chef_provider: #{instance[:deploy_chef_provider]}. Valid providers: #{valid_deploy_chef_providers.join(', ')}."
+# end
 
 # the $HOME of the deploy user can be overwritten with this variable.
 #default[:opsworks][:deploy_user][:home] = '/home/deploy'
