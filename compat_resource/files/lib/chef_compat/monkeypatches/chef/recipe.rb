@@ -51,7 +51,9 @@ class Chef
     #--
     # TODO: Duplicates functionality of RunListItem
     def self.parse_recipe_name(recipe_name, current_cookbook: nil)
+      puts "Current recipe:"
       puts recipe_name
+      puts "Current cookbook:"
       puts current_cookbook
       case recipe_name
       when /(.+?)::(.+)/
