@@ -14,28 +14,6 @@ define :opsworks_nodejs do
     end
   end
 
-  template "#{deploy[:deploy_to]}/shared/config/opsworks.js" do
-    cookbook 'opsworks_nodejs'
-    source 'opsworks.js.erb'
-    mode '0660'
-    owner deploy[:user]
-    group deploy[:group]
-    variables(:database => deploy[:database], :memcached => deploy[:memcached], :layers => layers)
-  end
-
-  template "#{node.default[:monit][:conf_dir]}/node_web_app-#{application}.monitrc" do
-    source 'node_web_app.monitrc.erb'
-    cookbook 'opsworks_nodejs'
-    owner 'root'
-    group 'root'
-    mode '0644'
-    variables(
-      :deploy => deploy,
-      :application_name => application,
-      :monitored_script => "#{deploy[:deploy_to]}/current/server.js"
-    )
-    notifies :restart, "service[monit]", :immediately
-  end
 
   file "#{deploy[:deploy_to]}/shared/config/ssl.crt" do
     owner deploy[:user]

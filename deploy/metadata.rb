@@ -6,4 +6,3 @@ version     "1.0.0"
 
 depends "dependencies"
 depends "ssh_users"
-depends "opsworks_nodejs"
