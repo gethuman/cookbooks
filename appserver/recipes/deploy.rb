@@ -4,7 +4,7 @@ layers = instance['role'] # the attribute formerly known as 'layers' via opswork
 env_var = ""
 
 app['environment'].each do |key,value|
-  env_var = env_var << "#{key}:#{value},"
+  env_var = env_var << "\"#{key}\":\"#{value}\","
 end
 
 if layers.include?("api-layer")
