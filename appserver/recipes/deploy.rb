@@ -42,7 +42,7 @@ directory '/tmp/.ssh' do
   owner 'root'
   group 'root'
   mode '0770'
-  resursive true
+  recursive true
   action :create
 end
 
