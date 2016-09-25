@@ -1,14 +1,18 @@
 app = search("aws_opsworks_app").first
 instance = search("aws_opsworks_instance", "self:true").first # this gets the databag for the instance
 layers = instance['role'] # the attribute formerly known as 'layers' via opsworks is now found as role in the opsworks instance
-env_var = app['environment'].to_s.delete! '{}'
+env_var = app['environment']
+
+app['environment'].each |key,value| do
+  env_var = env_var + '"' + key + ':' + '"' value + ","
+end
 
 if layers.include?("api-layer")
-    env_var = env_var + ',"CONTAINER":"api"'
+    env_var = env_var + '"CONTAINER":"api"'
 elsif layers.include?("web-layer")
-    env_var = env_var + ',"CONTAINER":"web"'
+    env_var = env_var + '"CONTAINER":"web"'
 else
-    env_var = env_var + ',"CONTAINER":"unknown"'
+    env_var = env_var + '"CONTAINER":"unknown"'
 end
 
 directory '/etc/pm2/conf.d' do
