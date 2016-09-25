@@ -1,7 +1,7 @@
 app = search("aws_opsworks_app").first
 instance = search("aws_opsworks_instance", "self:true").first # this gets the databag for the instance
 layers = instance['role'] # the attribute formerly known as 'layers' via opsworks is now found as role in the opsworks instance
-env_var = app['environment'].to_s
+env_var = app['environment'].to_s.delete! '{}'
 
 if layers.include?("api-layer")
     env_var = env_var + ',"CONTAINER":"api"'
