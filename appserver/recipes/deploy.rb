@@ -38,6 +38,14 @@ file '/root/.ssh/id_rsa' do
   mode '0600'
 end
 
+directory '/tmp/.ssh' do
+  owner 'root'
+  group 'root'
+  mode '0770'
+  resursive true
+  action :create
+end
+
 template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
   source "chef_ssh_deploy_wrapper.sh.erb"
   owner 'root'
