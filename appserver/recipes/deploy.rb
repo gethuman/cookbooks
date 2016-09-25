@@ -53,7 +53,7 @@ template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
 end
 
 
-directory '/srv/www/app/current' do
+directory '/srv/www/app/current/log' do
   owner 'root'
   group 'root'
   mode '0644'
@@ -63,7 +63,9 @@ end
 
 git '/srv/www/app/current' do
   repository app['app_source']['url']
+  revision "master"
   checkout_branch "master"
+  enable_checkout false
   action :sync
   notifies :run, 'execute[npm install]', :immediately
 end
