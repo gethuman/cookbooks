@@ -40,7 +40,7 @@ end
 
 template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
   source "chef_ssh_deploy_wrapper.sh.erb"
-  owner root
+  owner 'root'
   mode 0770
 end
 
