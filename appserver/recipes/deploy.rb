@@ -78,4 +78,5 @@ end
 
 execute 'pm2' do
   command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
+  action :nothing
 end
