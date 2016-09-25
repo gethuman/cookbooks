@@ -62,7 +62,7 @@ directory '/srv/www/app/current' do
 end
 
 git '/srv/www/app/current' do
-  repository "ext::ssh -i /root/.ssh/id_rsa -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no #{app['app_source']['url']}"
+  repository app['app_source']['url']}
   checkout_branch "master"
   action :sync
   notifies :run, 'execute[npm install]', :immediately
