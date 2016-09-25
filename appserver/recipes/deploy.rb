@@ -38,8 +38,15 @@ file '/root/.ssh/id_rsa' do
   mode '0600'
 end
 
+template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
+  source "chef_ssh_deploy_wrapper.sh.erb"
+  owner root
+  mode 0770
+end
+
 deploy 'private_repo' do
   repo app['app_source']['url']
+  ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
   migrate false
   keep_releases 5
   symlink_before_migrate({})
