@@ -53,7 +53,7 @@ template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
 end
 
 
-directory '/srv/www/app/current/log' do
+directory '/srv/www/app/current' do
   owner 'root'
   group 'root'
   mode '0644'
