@@ -31,7 +31,23 @@ template '/etc/pm2/conf.d/server.json' do
   mode '0644'
   variables :environments => { 'vars' => env_var }
   action :nothing
+  notifies :create, 'directory[/root/.ssh]', :immediately
+end
+
+directory '/root/.ssh' do
+  owner 'root'
+  group 'root'
+  recursive true
+  action :nothing
   notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
+end
+
+file '/root/.ssh/known_hosts' do
+  content app['app_source']['ssh_key']
+  owner 'root'
+  group 'root'
+  action :nothing
+  notifies :run, 'file[/root/.ssh/id_rsa]', :immediately
 end
 
 file '/root/.ssh/id_rsa' do
