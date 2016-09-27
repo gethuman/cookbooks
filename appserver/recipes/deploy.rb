@@ -31,7 +31,7 @@ template '/etc/pm2/conf.d/server.json' do
   mode '0644'
   variables :environments => { 'vars' => env_var }
   action :nothing
-  notifies :create, 'directory[/root/.ssh]', :immediately
+  notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
   notifies :create, 'directory[/tmp/.ssh]', :immediately
 end
 
