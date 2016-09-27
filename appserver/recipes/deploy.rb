@@ -39,8 +39,7 @@ directory '/root/.ssh' do
   owner 'root'
   group 'root'
   recursive true
-  action :nothing
-  notifies :create, 'file[/root/.ssh/known_hosts]', :immediately
+  action :create
 end
 
 file '/root/.ssh/known_hosts' do
@@ -48,7 +47,7 @@ file '/root/.ssh/known_hosts' do
   owner 'root'
   group 'root'
   action :nothing
-  notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
+  notifies :run, 'execute[genssh]', :immediately
 end
 
 file '/root/.ssh/id_rsa' do
@@ -57,7 +56,7 @@ file '/root/.ssh/id_rsa' do
   group 'root'
   mode '0600'
   action :create_if_missing
-  notifies :run, 'execute[genssh]', :immediately
+  notifies :create, 'file[/root/.ssh/known_hosts]', :immediately
 end
 
 execute 'genssh' do
