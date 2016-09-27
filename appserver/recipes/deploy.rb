@@ -46,13 +46,13 @@ end
 execute 'genssh' do
   command "ssh-keygen - R bitbucket.org"
   action :nothing
-  notifies :create, 'execute[add_known_hosts]', :immediately
+  notifies :run, 'execute[add_known_hosts]', :immediately
 end
 
 execute 'add_known_hosts' do
   command "ssh-keyscan -H bitbucket.org >> /root/.ssh/known_hosts"
   action :nothing
-  notifies :create, 'directory[/tmp/.ssh]', :immediately
+  notifies :run, 'directory[/tmp/.ssh]', :immediately
 end
 
 directory '/tmp/.ssh' do
