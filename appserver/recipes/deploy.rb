@@ -44,7 +44,7 @@ file '/root/.ssh/id_rsa' do
 end
 
 execute 'genssh' do
-  command "ssh-keygen - R bitbucket.org"
+  command "ssh-keygen -R bitbucket.org"
   action :nothing
   notifies :run, 'execute[add_known_hosts]', :immediately
 end
