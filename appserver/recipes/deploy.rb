@@ -40,7 +40,7 @@ file '/root/.ssh/id_rsa' do
   group 'root'
   mode '0600'
   action :nothing
-  notifies :create, 'execute[genssh]', :immediately
+  notifies :run, 'execute[genssh]', :immediately
 end
 
 execute 'genssh' do
@@ -52,7 +52,7 @@ end
 execute 'add_known_hosts' do
   command "ssh-keyscan -H bitbucket.org >> /root/.ssh/known_hosts"
   action :nothing
-  notifies :run, 'directory[/tmp/.ssh]', :immediately
+  notifies :create, 'directory[/tmp/.ssh]', :immediately
 end
 
 directory '/tmp/.ssh' do
