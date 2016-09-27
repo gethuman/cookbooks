@@ -79,6 +79,7 @@ directory '/tmp/.ssh' do
   recursive true
   action :nothing
   notifies :create, 'template[/tmp/.ssh/chef_ssh_deploy_wrapper.sh]', :immediately
+  notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
 end
 
 template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
