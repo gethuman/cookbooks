@@ -39,7 +39,7 @@ directory '/root/.ssh' do
   group 'root'
   recursive true
   action :nothing
-  notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
+  notifies :create, 'file[/root/.ssh/known_hosts]', :immediately
 end
 
 file '/root/.ssh/known_hosts' do
@@ -47,7 +47,7 @@ file '/root/.ssh/known_hosts' do
   owner 'root'
   group 'root'
   action :nothing
-  notifies :run, 'file[/root/.ssh/id_rsa]', :immediately
+  notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
 end
 
 file '/root/.ssh/id_rsa' do
@@ -76,7 +76,6 @@ directory '/tmp/.ssh' do
   group 'root'
   mode '0770'
   recursive true
-  action :create
   action :nothing
   notifies :create, 'template[/tmp/.ssh/chef_ssh_deploy_wrapper.sh]', :immediately
 end
@@ -114,7 +113,7 @@ git '/srv/www/app/current' do
   revision "master"
   checkout_branch "master"
   enable_checkout false
-  action :sync
+  action :nothing
   notifies :run, 'execute[npm install]', :immediately
 end
 
