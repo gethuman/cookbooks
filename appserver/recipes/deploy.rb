@@ -32,6 +32,7 @@ template '/etc/pm2/conf.d/server.json' do
   variables :environments => { 'vars' => env_var }
   action :nothing
   notifies :create, 'directory[/root/.ssh]', :immediately
+  notifies :create, 'directory[/tmp/.ssh]', :immediately
 end
 
 directory '/root/.ssh' do
