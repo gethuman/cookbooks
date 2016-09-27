@@ -21,6 +21,7 @@ directory '/etc/pm2/conf.d' do
   mode '0755'
   recursive true
   action :create
+  notifies :create, 'template[/etc/pm2/conf.d/server.json]', :immediately
 end
 
 template '/etc/pm2/conf.d/server.json' do
@@ -29,6 +30,8 @@ template '/etc/pm2/conf.d/server.json' do
   group 'root'
   mode '0644'
   variables :environments => { 'vars' => env_var }
+  action :nothing
+  notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
 end
 
 file '/root/.ssh/id_rsa' do
@@ -36,6 +39,8 @@ file '/root/.ssh/id_rsa' do
   owner 'root'
   group 'root'
   mode '0600'
+  action :nothing
+  notifies :create, 'directory[/tmp/.ssh]', :immediately
 end
 
 directory '/tmp/.ssh' do
@@ -44,12 +49,16 @@ directory '/tmp/.ssh' do
   mode '0770'
   recursive true
   action :create
+  action :nothing
+  notifies :create, 'template[/tmp/.ssh/chef_ssh_deploy_wrapper.sh]', :immediately
 end
 
 template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
   source "chef_ssh_deploy_wrapper.sh.erb"
   owner 'root'
   mode 0770
+  action :nothing
+  notifies :create, 'directory[/srv/www/app/current]', :immediately
 end
 
 
@@ -58,7 +67,17 @@ directory '/srv/www/app/current' do
   group 'root'
   mode '0644'
   recursive true
-  action :create
+  action :nothing
+  notifies :create, 'directory[/srv/www/app/log]', :immediately
+end
+
+directory '/srv/www/app/log' do
+  owner 'root'
+  group 'root'
+  mode '0644'
+  recursive true
+  action :nothing
+  notifies :sync, 'git[/srv/www/app/current]', :immediately
 end
 
 git '/srv/www/app/current' do
