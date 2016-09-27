@@ -3,7 +3,7 @@ execute 'add nodejs repo' do
 end
 
 yum_package 'nodejs'
-package ['gcc-c++', 'make']
+package ['gcc-c++', 'make', 'openssl-devel']
 yum_package 'ImageMagick'
 
 execute 'install pm2' do
