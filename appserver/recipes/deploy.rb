@@ -40,6 +40,14 @@ file '/root/.ssh/id_rsa' do
   group 'root'
   mode '0600'
   action :nothing
+  notifies :create, 'template[/root/.ssh/known_hosts]', :immediately
+end
+
+template "/root/.ssh/known_hosts" do
+  source "known_hosts.erb"
+  owner 'root'
+  group 'root'
+  action :nothing
   notifies :create, 'directory[/tmp/.ssh]', :immediately
 end
 
