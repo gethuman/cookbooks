@@ -56,7 +56,7 @@ file '/root/.ssh/id_rsa' do
   owner 'root'
   group 'root'
   mode '0600'
-  action :nothing
+  action :create_if_missing
   notifies :run, 'execute[genssh]', :immediately
 end
 
