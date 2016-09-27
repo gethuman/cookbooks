@@ -40,13 +40,17 @@ file '/root/.ssh/id_rsa' do
   group 'root'
   mode '0600'
   action :nothing
-  notifies :create, 'template[/root/.ssh/known_hosts]', :immediately
+  notifies :create, 'execute[genssh]', :immediately
 end
 
-template "/root/.ssh/known_hosts" do
-  source "known_hosts.erb"
-  owner 'root'
-  group 'root'
+execute 'genssh' do
+  command "ssh-keygen - R bitbucket.org"
+  action :nothing
+  notifies :create, 'execute[add_known_hosts]', :immediately
+end
+
+execute 'add_known_hosts' do
+  command "ssh-keyscan -H bitbucket.org >> /root/.ssh/known_hosts"
   action :nothing
   notifies :create, 'directory[/tmp/.ssh]', :immediately
 end
