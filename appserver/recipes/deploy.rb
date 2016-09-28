@@ -130,7 +130,7 @@ execute 'set file perms' do
 end
 
 execute 'npm install' do
-  command "cd /srv/www/app/current && npm install"
+  command "su - root -c 'cd /srv/www/app/current && npm install'"
   action :nothing
   notifies :run, 'execute[pm2]', :immediately
 end
