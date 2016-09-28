@@ -114,6 +114,12 @@ git '/srv/www/app/current' do
   checkout_branch "master"
   enable_checkout false
   action :nothing
+  notifies :run, 'execute[app perms]', :immediately
+end
+
+execute 'app perms' do
+  command "chown -R root:root /srv/www/app/current"
+  action :nothing
   notifies :run, 'execute[npm install]', :immediately
 end
 
