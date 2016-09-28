@@ -120,6 +120,12 @@ end
 execute 'app perms' do
   command "chown -R root:root /srv/www/app/current"
   action :nothing
+  notifies :run, 'execute[set file perms]', :immediately
+end
+
+execute 'set file perms' do
+  command "setfacl -Rdm g:root:rwx /srv/www/app/current"
+  action :nothing
   notifies :run, 'execute[npm install]', :immediately
 end
 
