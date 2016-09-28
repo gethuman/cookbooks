@@ -1,3 +1,5 @@
+app = search("aws_opsworks_app").first
+
 git '/srv/www/app/current' do
   repository app['app_source']['url']
   ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
