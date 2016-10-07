@@ -28,18 +28,12 @@ end
 execute 'npm install' do
   command "su - root -c 'cd /srv/www/app/releases/#{release} && npm install'"
   action :nothing
-  notifies :run, 'execute[unlink current]', :immediately
+  notifies :create, 'link[/srv/www/app/current]', :immediately
 end
 
-execute 'unlink current' do
-  command "/bin/unlink /srv/www/app/current"
-  action :nothing
-  ignore_failure true
-  notifies :run, 'execute[link release]', :immediately
-end
-
-execute 'link release' do
-  command "/bin/ln -s /srv/www/app/releases/#{release} /srv/www/app/current"
+link '/srv/www/app/current' do
+  to "/srv/www/app/releases/#{release}"
+  link_type :symbolic
   action :nothing
   notifies :run, 'execute[pm2]', :immediately
 end
