@@ -9,8 +9,8 @@ git "/srv/www/app/releases/#{release}" do
   revision "master"
   checkout_branch "master"
   enable_checkout false
-  action :run
-  notifies :sync, 'execute[app perms]', :immediately
+  action :sync
+  notifies :run, 'execute[app perms]', :immediately
 end
 
 execute 'app perms' do
