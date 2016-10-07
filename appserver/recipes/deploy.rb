@@ -34,6 +34,7 @@ end
 execute 'unlink current' do
   command "/bin/unlink /srv/www/app/current"
   action :nothing
+  ignore_failure true
   notifies :run, 'execute[link release]', :immediately
 end
 

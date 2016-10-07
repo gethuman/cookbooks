@@ -117,18 +117,9 @@ template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
   owner 'root'
   mode 0770
   action :nothing
-  notifies :create, 'directory[/srv/www/app/current]', :immediately
-end
-
-
-directory '/srv/www/app/current' do
-  owner 'root'
-  group 'root'
-  mode '0644'
-  recursive true
-  action :nothing
   notifies :create, 'directory[/srv/www/app/log]', :immediately
 end
+
 
 directory '/srv/www/app/log' do
   owner 'root'
