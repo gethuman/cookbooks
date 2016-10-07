@@ -1,3 +1,8 @@
+instance = search("aws_opsworks_instance", "self:true").first # this gets the databag for the instance
+layers = instance['role'] # the attribute formerly known as 'layers' via opsworks is now found as role in the opsworks instance
+app = search("aws_opsworks_app").first
+env_var = ""
+
 execute 'add nodejs repo' do
   command 'curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -'
 end
@@ -10,8 +15,6 @@ execute 'install pm2' do
   command 'npm install pm2 -g'
 end
 
-instance = search("aws_opsworks_instance", "self:true").first # this gets the databag for the instance
-layers = instance['role'] # the attribute formerly known as 'layers' via opsworks is now found as role in the opsworks instance
 
 # setting environment vars for shell access
 if layers.include?("api-layer")
@@ -32,7 +35,6 @@ else
 end
 
 # building environment vars
-app = search("aws_opsworks_app").first
 app['environment'].each do |key,value|
   env_var = env_var << "\"#{key}\":\"#{value}\","
 end
