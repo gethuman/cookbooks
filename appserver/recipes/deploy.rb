@@ -10,7 +10,7 @@ git "/srv/www/app/releases/#{release}" do
   checkout_branch "master"
   enable_checkout false
   action :run
-  notifies :run, 'execute[app perms]', :immediately
+  notifies :sync, 'execute[app perms]', :immediately
 end
 
 execute 'app perms' do
