@@ -3,6 +3,19 @@ instance = search("aws_opsworks_instance", "self:true").first # this gets the da
 layers = instance['role'] # the attribute formerly known as 'layers' via opsworks is now found as role in the opsworks instance
 release = Time.now.strftime("%Y%m%d%H%M")
 
+# building environment vars
+app['environment'].each do |key,value|
+  env_var = env_var << "\"#{key}\":\"#{value}\","
+end
+
+if layers.include?("api-layer")
+    env_var = env_var + '"CONTAINER":"api"'
+elsif layers.include?("web-layer")
+    env_var = env_var + '"CONTAINER":"web"'
+else
+    env_var = env_var + '"CONTAINER":"unknown"'
+end
+
 git "/srv/www/app/releases/#{release}" do
   repository app['app_source']['url']
   ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
@@ -10,6 +23,16 @@ git "/srv/www/app/releases/#{release}" do
   checkout_branch "master"
   enable_checkout false
   action :sync
+  notifies :create, 'template[/etc/pm2/conf.d/server.json]', :immediately
+end
+
+template '/etc/pm2/conf.d/server.json' do
+  source 'server.erb'
+  owner 'root'
+  group 'root'
+  mode '0644'
+  variables :environments => { 'vars' => env_var }
+  action :nothing
   notifies :run, 'execute[app perms]', :immediately
 end
 
