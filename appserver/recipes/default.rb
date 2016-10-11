@@ -53,16 +53,6 @@ directory '/etc/pm2/conf.d' do
   mode '0755'
   recursive true
   action :create
-  notifies :create, 'template[/etc/pm2/conf.d/server.json]', :immediately
-end
-
-template '/etc/pm2/conf.d/server.json' do
-  source 'server.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
-  variables :environments => { 'vars' => env_var }
-  action :nothing
   notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
   notifies :create, 'directory[/tmp/.ssh]', :immediately
 end
