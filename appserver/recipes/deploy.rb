@@ -25,7 +25,7 @@ git "/srv/www/app/releases/#{release}" do
   revision "master"
   checkout_branch "master"
   enable_checkout false
-  action :nothing
+  action :sync
   notifies :create, 'template[/etc/pm2/conf.d/server.json]', :immediately
   notifies :run, 'execute[app perms]', :immediately
   notifies :run, 'execute[set file perms]', :immediately
