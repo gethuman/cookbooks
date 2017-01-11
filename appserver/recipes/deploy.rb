@@ -67,7 +67,7 @@ end
 execute 'pm2' do
   command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
   action :nothing
-  notifies :purge, 'janitor_directory[/srv/www/app/releases]'
+  notifies :purge, 'janitor_sweep[/srv/www/app/releases]'
 end
 
 janitor_sweep '/srv/www/app/releases' do
