@@ -103,6 +103,8 @@ class Chef
             #
             f = Chef::Resource::File.new(fname,run_context)
             f.backup false
+            f.owner "root"
+            f.group "root"
             f.run_action(:delete)
           end
           updated = true
