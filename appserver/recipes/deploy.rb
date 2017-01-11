@@ -18,7 +18,6 @@ else
 end
 
 include_recipe 'appserver::deploy_wrapper'
-include_recipe 'janitor'
 
 git "/srv/www/app/releases/#{release}" do
   repository app['app_source']['url']
