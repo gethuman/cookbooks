@@ -8,7 +8,7 @@ execute 'add nodejs repo' do
 end
 
 yum_package 'nodejs'
-package ['gcc-c++', 'make', 'openssl-devel']
+package ['gcc-c++', 'make', 'openssl-devel', 'perl-Switch', 'perl-DateTime', 'perl-Sys-Syslog', 'perl-LWP-Protocol-https']
 yum_package 'ImageMagick'
 
 execute 'install pm2' do
@@ -126,4 +126,26 @@ directory '/srv/www/app/releases' do
   mode '0644'
   recursive true
   action :nothing
+end
+
+remote_file "/tmp/CloudWatchMonitoringScripts-1.2.1.zip" do
+  source "http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip"
+  owner "root"
+  group "root"
+  mode 0750 
+end
+
+execute "unzip cloud watch monitoring scripts" do
+    command "unzip /tmp/CloudWatchMonitoringScripts-1.2.1.zip"
+    cwd "#{node[:cw_mon][:home_dir]}"
+    user "root"
+    group "root"
+end
+
+cron "cloudwatch_schedule_metrics" do
+  action :create 
+  minute "*/5"
+  user "root"
+  group "root"
+  command "#{node[:cw_mon][:home_dir]}/aws-scripts-mon/mon-put-instance-data.pl --mem-util --disk-space-util --disk-path=/ --from-cron"
 end
