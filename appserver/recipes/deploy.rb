@@ -72,5 +72,5 @@ end
 
 janitor_sweep '/srv/www/app/releases' do
   action :purge
-  age 1
+  age 3
 end
