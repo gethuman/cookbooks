@@ -38,16 +38,18 @@ module Janitor
 
       Dir[path_str].each do |file|
         begin
-          fstat     = File.stat(file)
-          @dir_size += fstat.size
-          @file_table.store(
-              file,
-              {
-                  ctime: fstat.ctime.to_i,
-                  mtime: fstat.mtime.to_i,
-                  size:  fstat.size
-              }
-          )
+          if File.directory?(file)
+            fstat     = File.stat(file)
+            @dir_size += fstat.size
+            @file_table.store(
+                file,
+                {
+                    ctime: fstat.ctime.to_i,
+                    mtime: fstat.mtime.to_i,
+                    size:  fstat.size
+                }
+            )
+          end
         rescue Exception => e
           Chef::Log.warn "Skipping stat on file #{file}: #{e.message}"
         end
