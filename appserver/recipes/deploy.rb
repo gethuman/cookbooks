@@ -18,6 +18,7 @@ else
 end
 
 include_recipe 'appserver::deploy_wrapper'
+include_recipe 'chef_janitor'
 
 git "/srv/www/app/releases/#{release}" do
   repository app['app_source']['url']
@@ -67,4 +68,12 @@ end
 execute 'pm2' do
   command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
   action :nothing
+  notifies :purge, 'janitor_directory[/srv/www/app/releases]'
 end
+
+janitor_directory '/srv/www/app/releases' do
+  action :purge
+  age 5
+  directory_size "5G"
+end
+
