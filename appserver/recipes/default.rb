@@ -137,7 +137,7 @@ end
 
 execute "unzip cloud watch monitoring scripts" do
     command "unzip /tmp/CloudWatchMonitoringScripts-1.2.1.zip"
-    cwd "#{node[:cw_mon][:home_dir]}"
+    cwd "/root"
     user "root"
     group "root"
 end
@@ -147,5 +147,5 @@ cron "cloudwatch_schedule_metrics" do
   minute "*/5"
   user "root"
   group "root"
-  command "#{node[:cw_mon][:home_dir]}/aws-scripts-mon/mon-put-instance-data.pl --mem-util --disk-space-util --disk-path=/ --from-cron"
+  command "/root/aws-scripts-mon/mon-put-instance-data.pl --mem-util --disk-space-util --disk-path=/ --from-cron"
 end
