@@ -1,3 +1,3 @@
 source 'https://supermarket.chef.io'
 
-cookbook "chef-janitor"
+cookbook 'janitor', '~> 2.0.1'
