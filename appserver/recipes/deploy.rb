@@ -70,7 +70,7 @@ execute 'pm2' do
   notifies :purge, 'janitor_directory[/srv/www/app/releases]'
 end
 
-janitor_directory '/srv/www/app/releases' do
+janitor_sweep '/srv/www/app/releases' do
   action :purge
   age 1
   recursive true
