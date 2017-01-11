@@ -18,7 +18,7 @@ else
 end
 
 include_recipe 'appserver::deploy_wrapper'
-include_recipe 'chef_janitor'
+include_recipe 'janitor'
 
 git "/srv/www/app/releases/#{release}" do
   repository app['app_source']['url']
@@ -76,4 +76,3 @@ janitor_directory '/srv/www/app/releases' do
   age 5
   directory_size "5G"
 end
-
