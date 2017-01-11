@@ -1,0 +1,46 @@
+{
+  "name": "janitor",
+  "description": "A General Cookbook used to cleanup files and directories on nodes",
+  "long_description": "# Description\n\nThis cookbook is meant to keep order on a running node to purge files\non the filesystem that are unwanted.  You could also apply some criteria to the files\nthat are targeted such as regular expressions, age, and size.\n\n# Requirements\n\nChef, Linux\n\n## Platform:\n\n* redhat\n* centos\n* ubuntu\n* debian\n* macos\n* Good possibility it will work in windows as all path references have been abstracted. (Not tested)\n\n## Cookbooks:\n\n*No cookbooks defined*\n\n# Resources\n\n* [janitor_directory](#janitor_directory)\n\n## janitor\\_directory\n\n### Actions\n\n- purge:  Default action.\n\n### Attribute Parameters\n\n### janitor\\_directory\n\n* `path` - Resource name or path parameter will pass the path to be examined to the lwrp.\n\n* `include_only`\n    * Array of regular expressions that are applied to the list of files present in `path`.\n    * This will eliminate all entries except for those matching the regular expressions.\n    * Defaults to `nil`.\n\n* `exclude_all`\n    * Array of regular expressions that are applied to the list of files present in `path`.\n    * This will eliminate all entries matching the regular expressions.\n    * Defaults to `nil`.\n\n* `age` - Files older than `age` (in days) will be deleted.\n    * Defaults to `nil`.\n\n* `size` - Files larger than the `size` (in b,M,G,T,P) will be deleted.\n    * Defaults to `nil`.\n\n* `directory_size` - Old files are removed until directory is at or below given size\n    * Defaults to `nil`.\n\n* `recursive` - enable recursive searching from the path indicated in the resource\n    * Defaults to `false`\n\n### Examples\n\n```\n    #  Delete all files in /var/log with the .gz extension\n    janitor_directory \"/var/log\" do\n      include_only    [/.*\\.gz$]\n      action          :purge\n    end\n\n    #  Delete all files in /var/log with the .gz and numeric extension\n    janitor_directory \"/var/log\" do\n      include_only    [/.*\\.gz$/,/.*\\.\\d/]\n      action          :purge\n    end\n\n    # Delete all files in /var/log (recusively) with the .gz and numeric extension\n    # And are also larger than 10M and older than 30 days\n    janitor_directory \"/var/log\" do\n      include_only    [/.*\\.gz$/,/.*\\.\\d/]\n      age             30\n      size            \"10M\"\n      recursive       true\n      action          :purge\n    end\n    \n    # Delete old files fom /var/log until directory is below 2G\n    janitor_directory \"/var/log\" do\n      directory_size  \"2G\"\n      action          :purge\n    end\n```\n",
+  "maintainer": "Mark Pimentel",
+  "maintainer_email": "markpimentel22@gmail.com",
+  "license": "Apache 2.0",
+  "platforms": {
+    "redhat": ">= 0.0.0",
+    "centos": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "ubuntu": ">= 0.0.0",
+    "mac_os_x": ">= 0.0.0",
+    "mac_os_x_server": ">= 0.0.0"
+  },
+  "dependencies": {
+
+  },
+  "recommendations": {
+
+  },
+  "suggestions": {
+
+  },
+  "conflicting": {
+
+  },
+  "providing": {
+
+  },
+  "replacing": {
+
+  },
+  "attributes": {
+
+  },
+  "groupings": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "2.0.1",
+  "source_url": "",
+  "issues_url": ""
+}
