@@ -146,6 +146,5 @@ cron "cloudwatch_schedule_metrics" do
   action :create 
   minute "*/5"
   user "root"
-  group "root"
   command "/root/aws-scripts-mon/mon-put-instance-data.pl --mem-util --disk-space-util --disk-path=/ --from-cron"
 end
