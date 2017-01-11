@@ -73,5 +73,6 @@ end
 janitor_directory '/srv/www/app/releases' do
   action :purge
   age 1
+  recursive true
   directory_size "5G"
 end
