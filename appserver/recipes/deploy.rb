@@ -72,6 +72,6 @@ end
 
 janitor_directory '/srv/www/app/releases' do
   action :purge
-  age 5
+  age 1
   directory_size "5G"
 end
