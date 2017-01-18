@@ -36,7 +36,10 @@ module Janitor
       @dir_size   = 0
       @file_table = Hash.new
 
-      Dir[path_str].each do |file|
+      directories = Dir[path_str].select {|f| File.directory? f}.sort_by{ |f| File.mtime(f) }
+
+      # ensure at least one directory is left behind for rollbacks
+      directories.first(directories.size() - 1).each do |file|
         begin
           if File.directory?(file)
             fstat     = File.stat(file)
