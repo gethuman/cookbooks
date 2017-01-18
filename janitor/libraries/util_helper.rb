@@ -41,18 +41,17 @@ module Janitor
       # ensure at least one directory is left behind for rollbacks
       directories.first(directories.size() - 1).each do |file|
         begin
-          if File.directory?(file)
-            fstat     = File.stat(file)
-            @dir_size += fstat.size
-            @file_table.store(
-                file,
-                {
-                    ctime: fstat.ctime.to_i,
-                    mtime: fstat.mtime.to_i,
-                    size:  fstat.size
-                }
-            )
-          end
+          Chef::Log.info file.path
+          fstat     = File.stat(file)
+          @dir_size += fstat.size
+          @file_table.store(
+              file,
+              {
+                  ctime: fstat.ctime.to_i,
+                  mtime: fstat.mtime.to_i,
+                  size:  fstat.size
+              }
+          )
         rescue Exception => e
           Chef::Log.warn "Skipping stat on file #{file}: #{e.message}"
         end
