@@ -68,3 +68,9 @@ execute 'pm2' do
   command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
   action :nothing
 end
+
+janitor_sweep '/srv/www/app/releases' do		
+  action :purge		
+  age 7
+  directory_size "40K" # each release directory is 4K block size, so 4K * x releases to keep
+end 

@@ -38,12 +38,19 @@ module Janitor
 
       directories = Dir[path_str].select {|f| File.directory? f}.sort_by{ |f| File.mtime(f) }
 
+      index = directories.size() - 2
+
+      if index < 0
+        index = 0
+      end
+
       # ensure at least one directory is left behind for rollbacks
-      directories.first(directories.size() - 2).each do |file|
+      directories.first(index).each do |file|
         begin
           Chef::Log.info file
           fstat     = File.stat(file)
           @dir_size += fstat.size
+          Chef::Log.info @dir_size
           @file_table.store(
               file,
               {
@@ -99,7 +106,10 @@ module Janitor
     def to_dir_size(size)
       sorted      = @file_table.sort_by { |k, v| v[:mtime] }
       c           = SizeConversion.new(size.to_s)
+      Chef::Log.info 'Specified directory size'
+      Chef::Log.info c.to_size(:b).to_f
       delete_size = @dir_size - c.to_size(:b).to_f
+      Chef::Log.info delete_size
 
       if delete_size <= 0
         return {}
@@ -115,6 +125,7 @@ module Janitor
           break
         end
       end
+      Chef::Log.info 'Specified directory size #{list.length}'
       return list
     end
 
