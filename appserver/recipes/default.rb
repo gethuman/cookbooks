@@ -4,7 +4,7 @@ app = search("aws_opsworks_app").first
 env_var = ""
 
 execute 'add nodejs repo' do
-  command 'curl --silent --location https://rpm.nodesource.com/setup_6.x | bash -'
+  command 'curl --silent --location https://rpm.nodesource.com/setup_7.x | bash -'
 end
 
 yum_package 'nodejs'
@@ -132,7 +132,7 @@ remote_file "/tmp/CloudWatchMonitoringScripts-1.2.1.zip" do
   source "http://aws-cloudwatch.s3.amazonaws.com/downloads/CloudWatchMonitoringScripts-1.2.1.zip"
   owner "root"
   group "root"
-  mode 0750 
+  mode 0750
 end
 
 execute "unzip cloud watch monitoring scripts" do
@@ -143,7 +143,7 @@ execute "unzip cloud watch monitoring scripts" do
 end
 
 cron "cloudwatch_schedule_metrics" do
-  action :create 
+  action :create
   minute "*/5"
   user "root"
   command "/root/aws-scripts-mon/mon-put-instance-data.pl --mem-util --disk-space-util --disk-path=/ --from-cron"
