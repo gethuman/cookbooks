@@ -71,6 +71,5 @@ end
 
 janitor_sweep '/srv/www/app/releases' do		
   action :purge		
-  age 7
   directory_size "40K" # each release directory is 4K block size, so 4K * x releases to keep
 end 

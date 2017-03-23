@@ -59,6 +59,7 @@ class Chef
 
       def action_purge
         updated = false
+        Chef::Log.info 'Executing purge'
 
         unless Dir.exists?(@current_resource.path)
           Chef::Application.fatal! "Directory #{@current_resource.path} not found"
@@ -80,12 +81,16 @@ class Chef
 
         del_files = {}
 
+        Chef::Log.info @current_resource
+
         case
           when @current_resource.age
+            Chef::Log.info 'Filtering by age'
             del_files.merge!(fl.older_than(@current_resource.age))
           when @current_resource.size
             del_files.merge!(fl.larger_than(@current_resource.size))
           when @current_resource.directory_size
+            Chef::Log.info "Deleting based on directory size"
             del_files.merge!(fl.to_dir_size(@current_resource.directory_size))
         end
 

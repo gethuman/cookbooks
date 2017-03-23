@@ -51,6 +51,7 @@ module Janitor
           fstat     = File.stat(file)
           @dir_size += fstat.size
           Chef::Log.info @dir_size
+          Chef::Log.info "Logging out size"
           @file_table.store(
               file,
               {
