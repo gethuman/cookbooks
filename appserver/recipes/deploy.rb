@@ -22,8 +22,8 @@ include_recipe 'appserver::deploy_wrapper'
 git "/srv/www/app/releases/#{release}" do
   repository app['app_source']['url']
   ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
-  revision "master"
-  checkout_branch "master"
+  revision app['app_source']['revision'] ? app['app_source']['revision'] : "master"
+  checkout_branch app['app_source']['revision'] ? app['app_source']['revision'] : "master"
   enable_checkout false
   action :sync
   notifies :create, 'template[/etc/pm2/conf.d/server.json]', :immediately
