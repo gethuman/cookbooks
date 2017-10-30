@@ -36,16 +36,8 @@ module Janitor
       @dir_size   = 0
       @file_table = Hash.new
 
-      directories = Dir[path_str].select {|f| File.directory? f}.sort_by{ |f| File.mtime(f) }
-
-      index = directories.size() - 2
-
-      if index < 0
-        index = 0
-      end
-
       # ensure at least one directory is left behind for rollbacks
-      directories.first(index).each do |file|
+      Dir[path_str].each do |file|
         begin
           Chef::Log.info file
           fstat     = File.stat(file)
