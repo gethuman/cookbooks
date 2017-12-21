@@ -4,7 +4,7 @@ app = search("aws_opsworks_app").first
 env_var = ""
 
 execute 'add nodejs repo' do
-  command 'curl --silent --location https://rpm.nodesource.com/setup_7.x | bash -'
+  command 'curl --silent --location https://rpm.nodesource.com/setup_9.x | bash -'
 end
 
 yum_package 'nodejs'
