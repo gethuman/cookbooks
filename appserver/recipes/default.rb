@@ -11,10 +11,11 @@ yum_package 'nodejs'
 package ['gcc-c++', 'make', 'openssl-devel', 'perl-Switch', 'perl-DateTime', 'perl-Sys-Syslog', 'perl-LWP-Protocol-https']
 yum_package 'ImageMagick'
 
-execute 'install pm2' do
-  command 'npm install pm2 -g'
+if layers.include?("api-layer") || layers.include?("web-layer")
+  execute 'install pm2' do
+    command 'npm install pm2 -g'
+  end
 end
-
 
 # setting environment vars for shell access
 if layers.include?("api-layer")
@@ -54,14 +55,16 @@ else
     env_var = env_var + '"CONTAINER":"unknown"'
 end
 
-directory '/etc/pm2/conf.d' do
-  owner 'root'
-  group 'root'
-  mode '0755'
-  recursive true
-  action :create
-  notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
-  notifies :create, 'directory[/tmp/.ssh]', :immediately
+if layers.include?("api-layer") || layers.include?("web-layer")
+  directory '/etc/pm2/conf.d' do
+    owner 'root'
+    group 'root'
+    mode '0755'
+    recursive true
+    action :create
+    notifies :create, 'file[/root/.ssh/id_rsa]', :immediately
+    notifies :create, 'directory[/tmp/.ssh]', :immediately
+  end
 end
 
 directory '/root/.ssh' do

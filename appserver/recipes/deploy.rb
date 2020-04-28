@@ -21,29 +21,46 @@ end
 
 include_recipe 'appserver::deploy_wrapper'
 
-git "/srv/www/app/releases/#{release}" do
-  repository app['app_source']['url']
-  ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
-  revision app['app_source']['revision'] ? app['app_source']['revision'] : "master"
-  checkout_branch app['app_source']['revision'] ? app['app_source']['revision'] : "master"
-  enable_checkout false
-  action :sync
-  notifies :create, 'template[/etc/pm2/conf.d/server.json]', :immediately
-  notifies :run, 'execute[app perms]', :immediately
-  notifies :run, 'execute[set file perms]', :immediately
-  notifies :run, 'execute[npm install]', :immediately
-  notifies :create, 'link[/srv/www/app/current]', :immediately
-  notifies :run, 'execute[pm2]', :immediately
+if layers.include?("api-layer") || layers.include?("web-layer")
+  git "/srv/www/app/releases/#{release}" do
+    repository app['app_source']['url']
+    ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
+    revision app['app_source']['revision'] ? app['app_source']['revision'] : "master"
+    checkout_branch app['app_source']['revision'] ? app['app_source']['revision'] : "master"
+    enable_checkout false
+    action :sync
+    notifies :create, 'template[/etc/pm2/conf.d/server.json]', :immediately
+    notifies :run, 'execute[app perms]', :immediately
+    notifies :run, 'execute[set file perms]', :immediately
+    notifies :run, 'execute[npm install]', :immediately
+    notifies :create, 'link[/srv/www/app/current]', :immediately
+    notifies :run, 'execute[pm2]', :immediately
+  end
+
+  template '/etc/pm2/conf.d/server.json' do
+    source 'server.erb'
+    owner 'root'
+    group 'root'
+    mode '0644'
+    variables :environments => { 'vars' => env_var }
+    action :nothing
+  end
+else
+  git "/srv/www/app/releases/#{release}" do
+    repository app['app_source']['url']
+    ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
+    revision app['app_source']['revision'] ? app['app_source']['revision'] : "master"
+    checkout_branch app['app_source']['revision'] ? app['app_source']['revision'] : "master"
+    enable_checkout false
+    action :sync
+    notifies :run, 'execute[app perms]', :immediately
+    notifies :run, 'execute[set file perms]', :immediately
+    notifies :run, 'execute[npm install]', :immediately
+    notifies :create, 'link[/srv/www/app/current]', :immediately
+  end
 end
 
-template '/etc/pm2/conf.d/server.json' do
-  source 'server.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
-  variables :environments => { 'vars' => env_var }
-  action :nothing
-end
+
 
 execute 'app perms' do
   command "chown -R root:root /srv/www/app/releases/#{release}"
