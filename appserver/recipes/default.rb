@@ -27,6 +27,11 @@ elsif layers.include?("web-layer")
     execute 'add web env var' do
       command 'echo CONTAINER="web" >> /root/.bashrc && export CONTAINER="web"'
     end
+elsif layers.include?("batch-layer")
+    Chef::Log.info("** setting container to batch")
+    execute 'add batch env var' do
+      command 'echo CONTAINER="batch" >> /root/.bashrc && export CONTAINER="batch"'
+    end
 else
     Chef::Log.info("** setting container to unknown")
     execute 'add unknown env var' do
@@ -43,6 +48,8 @@ if layers.include?("api-layer")
     env_var = env_var + '"CONTAINER":"api"'
 elsif layers.include?("web-layer")
     env_var = env_var + '"CONTAINER":"web"'
+elsif layers.include?("batch-layer")
+    env_var = env_var + '"CONTAINER":"batch"'
 else
     env_var = env_var + '"CONTAINER":"unknown"'
 end
@@ -109,7 +116,6 @@ template "/tmp/.ssh/chef_ssh_deploy_wrapper.sh" do
   action :nothing
   notifies :create, 'directory[/srv/www/app/log]', :immediately
 end
-
 
 directory '/srv/www/app/log' do
   owner 'root'

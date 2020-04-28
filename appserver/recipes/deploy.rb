@@ -13,6 +13,8 @@ if layers.include?("api-layer")
     env_var = env_var + '"CONTAINER":"api"'
 elsif layers.include?("web-layer")
     env_var = env_var + '"CONTAINER":"web"'
+elsif layers.include?("batch-layer")
+    env_var = env_var + '"CONTAINER":"batch"'
 else
     env_var = env_var + '"CONTAINER":"unknown"'
 end
@@ -64,12 +66,19 @@ link '/srv/www/app/current' do
   action :nothing
 end
 
-execute 'pm2' do
-  command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
-  action :nothing
+if layers.include?("api-layer") || layers.include?("web-layer")
+  execute 'pm2' do
+    command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
+    action :nothing
+  end
 end
 
 janitor_sweep '/srv/www/app/releases' do		
+  action :purge		
+  directory_size "8K" # each release directory is 4K block size, so 4K * x releases to keep
+end
+
+janitor_sweep '/srv/www/app/log' do		
   action :purge		
   directory_size "8K" # each release directory is 4K block size, so 4K * x releases to keep
 end 
