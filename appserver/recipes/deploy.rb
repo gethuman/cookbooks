@@ -35,6 +35,7 @@ if layers.include?("api-layer") || layers.include?("web-layer")
     notifies :run, 'execute[npm install]', :immediately
     notifies :create, 'link[/srv/www/app/current]', :immediately
     notifies :run, 'execute[pm2]', :immediately
+    notifies :run, 'execute[logrotate]', :immediately
   end
 
   template '/etc/pm2/conf.d/server.json' do
@@ -84,6 +85,10 @@ end
 if layers.include?("api-layer") || layers.include?("web-layer")
   execute 'pm2' do
     command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
+    action :nothing
+  end
+
+  execute 'logrotate' do
     command "pm2 install pm2-logrotate"
     command "pm2 set pm2-logrotate:max_size 1K"
     command "pm2 set pm2-logrotate:retain 10"
