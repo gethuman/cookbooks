@@ -35,6 +35,9 @@ if layers.include?("api-layer") || layers.include?("web-layer")
     notifies :run, 'execute[npm install]', :immediately
     notifies :create, 'link[/srv/www/app/current]', :immediately
     notifies :run, 'execute[pm2]', :immediately
+    notifies :run, 'execute[pm2 install pm2-logrotate]', :immediately
+    notifies :run, 'execute[pm2 set pm2-logrotate:max_size 1K]', :immediately
+    notifies :run, 'execute[pm2 set pm2-logrotate:retain 10]', :immediately
   end
 
   template '/etc/pm2/conf.d/server.json' do
@@ -59,8 +62,6 @@ else
     notifies :create, 'link[/srv/www/app/current]', :immediately
   end
 end
-
-
 
 execute 'app perms' do
   command "chown -R root:root /srv/www/app/releases/#{release}"
