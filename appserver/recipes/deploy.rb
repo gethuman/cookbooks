@@ -87,7 +87,7 @@ if layers.include?("api-layer") || layers.include?("web-layer")
     command "pm2 install pm2-logrotate"
     command "pm2 set pm2-logrotate:max_size 1K"
     command "pm2 set pm2-logrotate:retain 10"
-
+    command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
     action :nothing
   end
 end
