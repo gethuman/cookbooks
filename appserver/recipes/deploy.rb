@@ -102,7 +102,7 @@ janitor_sweep '/srv/www/app/releases' do
   directory_size "8K" # each release directory is 4K block size, so 4K * x releases to keep
 end
 
-janitor_sweep '/srv/www/app/log' do		
-  action :purge		
-  directory_size "8K" # each release directory is 4K block size, so 4K * x releases to keep
-end 
+# janitor_sweep '/srv/www/app/log' do		
+#   action :purge		
+#   directory_size "8K" # each release directory is 4K block size, so 4K * x releases to keep
+# end 
