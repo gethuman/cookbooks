@@ -142,6 +142,7 @@ remote_file "/tmp/CloudWatchMonitoringScripts-1.2.1.zip" do
   owner "root"
   group "root"
   mode 0750
+  action: :create_if_missing
 end
 
 execute "unzip cloud watch monitoring scripts" do
