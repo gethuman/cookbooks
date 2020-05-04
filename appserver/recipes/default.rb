@@ -142,14 +142,14 @@ remote_file "/tmp/CloudWatchMonitoringScripts-1.2.1.zip" do
   owner "root"
   group "root"
   mode 0750
-  action: :create_if_missing
+  action :create_if_missing
 end
 
 execute "unzip cloud watch monitoring scripts" do
-    command "unzip /tmp/CloudWatchMonitoringScripts-1.2.1.zip"
-    cwd "/root"
-    user "root"
-    group "root"
+  command "unzip /tmp/CloudWatchMonitoringScripts-1.2.1.zip"
+  cwd "/root"
+  user "root"
+  group "root"
 end
 
 cron "cloudwatch_schedule_metrics" do
