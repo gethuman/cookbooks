@@ -11,7 +11,7 @@ yum_package 'nodejs'
 package ['gcc-c++', 'make', 'openssl-devel', 'perl-Switch', 'perl-DateTime', 'perl-Sys-Syslog', 'perl-LWP-Protocol-https']
 yum_package 'ImageMagick'
 
-if layers.include?("api-layer") || layers.include?("web-layer")
+if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer") || layers.include?("robocall-layer")
   execute 'install pm2' do
     command 'npm install pm2 -g'
   end
@@ -69,7 +69,7 @@ else
     env_var = env_var + '"CONTAINER":"unknown"'
 end
 
-if layers.include?("api-layer") || layers.include?("web-layer")
+if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer") || layers.include?("robocall-layer")
   directory '/etc/pm2/conf.d' do
     owner 'root'
     group 'root'

@@ -25,7 +25,7 @@ end
 
 include_recipe 'appserver::deploy_wrapper'
 
-if layers.include?("api-layer") || layers.include?("web-layer")
+if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer") || layers.include?("robocall-layer")
   git "/srv/www/app/releases/#{release}" do
     repository app['app_source']['url']
     ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
@@ -86,7 +86,7 @@ link '/srv/www/app/current' do
   action :nothing
 end
 
-if layers.include?("api-layer") || layers.include?("web-layer")
+if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer") || layers.include?("robocall-layer")
   execute 'pm2' do
     command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
     action :nothing
