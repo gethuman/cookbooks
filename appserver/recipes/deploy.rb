@@ -15,6 +15,10 @@ elsif layers.include?("web-layer")
     env_var = env_var + '"CONTAINER":"web"'
 elsif layers.include?("batch-layer")
     env_var = env_var + '"CONTAINER":"batch"'
+elsif layers.include?("freeswitch-layer")
+    env_var = env_var + '"CONTAINER":"freeswitch"'
+elsif layers.include?("robocall-layer")
+    env_var = env_var + '"CONTAINER":"robocall"'
 else
     env_var = env_var + '"CONTAINER":"unknown"'
 end
@@ -72,7 +76,7 @@ execute 'set file perms' do
 end
 
 execute 'npm install' do
-  command "su - root -c 'cd /srv/www/app/releases/#{release} && npm install'"
+  command "su - root -c 'cd /srv/www/app/releases/#{release} && npm install && npm run build.telephony'"
   action :nothing
 end
 

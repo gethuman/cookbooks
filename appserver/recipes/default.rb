@@ -33,6 +33,16 @@ elsif layers.include?("batch-layer")
     execute 'add batch env var' do
       command 'echo CONTAINER="batch" >> /root/.bashrc && export CONTAINER="batch"'
     end
+elsif layers.include?("freeswitch-layer")
+    Chef::Log.info("** setting container to freeswitch")
+    execute 'add freeswitch env var' do
+      command 'echo CONTAINER="batch" >> /root/.bashrc && export CONTAINER="freeswitch"'
+    end
+elsif layers.include?("robocall-layer")
+    Chef::Log.info("** setting container to robocall")
+    execute 'add robocall env var' do
+      command 'echo CONTAINER="batch" >> /root/.bashrc && export CONTAINER="robocall"'
+    end
 else
     Chef::Log.info("** setting container to unknown")
     execute 'add unknown env var' do
@@ -51,6 +61,10 @@ elsif layers.include?("web-layer")
     env_var = env_var + '"CONTAINER":"web"'
 elsif layers.include?("batch-layer")
     env_var = env_var + '"CONTAINER":"batch"'
+elsif layers.include?("freeswitch-layer")
+    env_var = env_var + '"CONTAINER":"freeswitch"'
+elsif layers.include?("robocall-layer")
+    env_var = env_var + '"CONTAINER":"robocall"'
 else
     env_var = env_var + '"CONTAINER":"unknown"'
 end
