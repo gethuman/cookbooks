@@ -37,6 +37,7 @@ if layers.include?("api-layer") || layers.include?("web-layer") || layers.includ
     notifies :run, 'execute[app perms]', :immediately
     notifies :run, 'execute[set file perms]', :immediately
     notifies :run, 'execute[npm install]', :immediately
+    notifies :run, 'execute[telephony]', :immediately
     notifies :create, 'link[/srv/www/app/current]', :immediately
     notifies :run, 'execute[pm2]', :immediately
     notifies :run, 'execute[logrotate]', :immediately
@@ -61,6 +62,7 @@ else
     notifies :run, 'execute[app perms]', :immediately
     notifies :run, 'execute[set file perms]', :immediately
     notifies :run, 'execute[npm install]', :immediately
+    notifies :run, 'execute[telephony]', :immediately
     notifies :create, 'link[/srv/www/app/current]', :immediately
   end
 end
@@ -76,7 +78,12 @@ execute 'set file perms' do
 end
 
 execute 'npm install' do
-  command "su - root -c 'cd /srv/www/app/releases/#{release} && npm install && npm run build.telephony'"
+  command "su - root -c 'cd /srv/www/app/releases/#{release} && npm install'"
+  action :nothing
+end
+
+execute 'telephony' do
+  command "su - root -c 'cd /srv/www/app/releases/#{release} && npm run build.telephony'"
   action :nothing
 end
 
