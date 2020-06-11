@@ -83,7 +83,9 @@ execute 'npm install' do
 end
 
 execute 'telephony' do
+  Chef::Log.info("** running typescript compile for telephony...")
   command "su - root -c 'cd /srv/www/app/releases/#{release} && npm run build.telephony'"
+  Chef::Log.info("** running typescript compile for telephony...done")
   action :nothing
 end
 
