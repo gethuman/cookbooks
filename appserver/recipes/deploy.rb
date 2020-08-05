@@ -17,15 +17,13 @@ elsif layers.include?("batch-layer")
     env_var = env_var + '"CONTAINER":"batch"'
 elsif layers.include?("freeswitch-layer")
     env_var = env_var + '"CONTAINER":"freeswitch"'
-elsif layers.include?("robocall-layer")
-    env_var = env_var + '"CONTAINER":"robocall"'
 else
     env_var = env_var + '"CONTAINER":"unknown"'
 end
 
 include_recipe 'appserver::deploy_wrapper'
 
-if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer") || layers.include?("robocall-layer")
+if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer")
   git "/srv/www/app/releases/#{release}" do
     repository app['app_source']['url']
     ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
@@ -95,7 +93,7 @@ link '/srv/www/app/current' do
   action :nothing
 end
 
-if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer") || layers.include?("robocall-layer")
+if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer")
   execute 'pm2' do
     command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
     action :nothing
