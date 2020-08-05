@@ -15,13 +15,15 @@ elsif layers.include?("web-layer")
     env_var = env_var + '"CONTAINER":"web"'
 elsif layers.include?("batch-layer")
     env_var = env_var + '"CONTAINER":"batch"'
+elsif layers.include?("freeswitch-layer")
+    env_var = env_var + '"CONTAINER":"freeswitch"'
 else
     env_var = env_var + '"CONTAINER":"unknown"'
 end
 
 include_recipe 'appserver::deploy_wrapper'
 
-if layers.include?("api-layer") || layers.include?("web-layer")
+if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer")
   git "/srv/www/app/releases/#{release}" do
     repository app['app_source']['url']
     ssh_wrapper "/tmp/.ssh/chef_ssh_deploy_wrapper.sh"
@@ -33,6 +35,7 @@ if layers.include?("api-layer") || layers.include?("web-layer")
     notifies :run, 'execute[app perms]', :immediately
     notifies :run, 'execute[set file perms]', :immediately
     notifies :run, 'execute[npm install]', :immediately
+    notifies :run, 'execute[telephony]', :immediately
     notifies :create, 'link[/srv/www/app/current]', :immediately
     notifies :run, 'execute[pm2]', :immediately
     notifies :run, 'execute[logrotate]', :immediately
@@ -57,6 +60,7 @@ else
     notifies :run, 'execute[app perms]', :immediately
     notifies :run, 'execute[set file perms]', :immediately
     notifies :run, 'execute[npm install]', :immediately
+    notifies :run, 'execute[telephony]', :immediately
     notifies :create, 'link[/srv/www/app/current]', :immediately
   end
 end
@@ -76,13 +80,20 @@ execute 'npm install' do
   action :nothing
 end
 
+execute 'telephony' do
+  Chef::Log.info("** running typescript compile for telephony...")
+  command "su - root -c 'cd /srv/www/app/releases/#{release} && npm run build.telephony'"
+  Chef::Log.info("** running typescript compile for telephony...done")
+  action :nothing
+end
+
 link '/srv/www/app/current' do
   to "/srv/www/app/releases/#{release}"
   link_type :symbolic
   action :nothing
 end
 
-if layers.include?("api-layer") || layers.include?("web-layer")
+if layers.include?("api-layer") || layers.include?("web-layer") || layers.include?("freeswitch-layer")
   execute 'pm2' do
     command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
     action :nothing
