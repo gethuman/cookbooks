@@ -76,13 +76,13 @@ execute 'set file perms' do
 end
 
 execute 'npm install' do
-  command "su - root -c 'cd /srv/www/app/releases/#{release} && npm install'"
+  command "su - root -c 'cd /srv/www/app/releases/#{release}/ng1 && npm install'"
   action :nothing
 end
 
 execute 'telephony' do
   Chef::Log.info("** running typescript compile for telephony...")
-  command "su - root -c 'cd /srv/www/app/releases/#{release} && npm run build.telephony'"
+  command "su - root -c 'cd /srv/www/app/releases/#{release}/ng1 && npm run build.telephony'"
   Chef::Log.info("** running typescript compile for telephony...done")
   action :nothing
 end
@@ -108,12 +108,12 @@ if layers.include?("api-layer") || layers.include?("web-layer") || layers.includ
   end
 end
 
-janitor_sweep '/srv/www/app/releases' do		
-  action :purge		
+janitor_sweep '/srv/www/app/releases' do
+  action :purge
   directory_size "8K" # each release directory is 4K block size, so 4K * x releases to keep
 end
 
-# janitor_sweep '/srv/www/app/log' do		
-#   action :purge		
+# janitor_sweep '/srv/www/app/log' do
+#   action :purge
 #   directory_size "8K" # each release directory is 4K block size, so 4K * x releases to keep
-# end 
+# end
