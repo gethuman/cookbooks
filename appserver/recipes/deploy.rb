@@ -71,7 +71,9 @@ execute 'app perms' do
 end
 
 execute 'set file perms' do
-  command "setfacl -Rdm g:root:rwx /srv/www/app/releases/#{release}"
+  command "setfacl -Rdm u::rwx /srv/www/app/releases/#{release}"
+  command "setfacl -Rdm g::rwx /srv/www/app/releases/#{release}"
+  command "setfacl -Rdm o::rwx /srv/www/app/releases/#{release}"
   action :nothing
 end
 
@@ -106,6 +108,39 @@ if layers.include?("api-layer") || layers.include?("web-layer") || layers.includ
     command "pm2 startOrRestart /etc/pm2/conf.d/server.json"
     action :nothing
   end
+end
+
+if layers.include?("batch-layer")
+    cron "startPendingCallbacks" do
+        minute "*/2"
+        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -n -t startPendingCallbacks -e production"
+    end
+    cron "cleanupCallbacks" do
+        minute "*/2"
+        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -n -t cleanupCallbacks -e production"
+    end
+    cron "check.send.company.open.notifications" do
+        minute "*/30"
+        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a check.send.company.open.notifications"
+    end
+    cron "check.send.issue.reminders" do
+        minute "*/10"
+        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a check.send.issue.reminders"
+    end
+    cron "search.reindex" do
+        minute "0"
+        hour "1"
+        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a search.reindex"
+    end
+    cron "translation.daily" do
+        minute "0"
+        hour "3"
+        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a translation.daily"
+    end
+    cron "bulldoze.old.issues" do
+        minute "0"
+        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a bulldoze.old.issues"
+    end
 end
 
 janitor_sweep '/srv/www/app/releases' do
