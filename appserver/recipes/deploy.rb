@@ -85,9 +85,9 @@ execute 'npm install' do
 end
 
 execute 'envS3' do
-  Chef::Log.info("** running typescript compile for envS3...")
+  Chef::Log.info("** running envS3...")
   command "su - root -c 'cd /srv/www/app/releases/#{release}/ng1 && npm run envS3'"
-  Chef::Log.info("** running typescript compile for envS3...done")
+  Chef::Log.info("** running envS3...done")
   action :nothing
 end
 
