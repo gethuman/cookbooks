@@ -35,6 +35,7 @@ if layers.include?("api-layer") || layers.include?("web-layer") || layers.includ
     notifies :run, 'execute[app perms]', :immediately
     notifies :run, 'execute[set file perms]', :immediately
     notifies :run, 'execute[npm install]', :immediately
+    notifies :run, 'execute[envS3]', :immediately
     notifies :run, 'execute[telephony]', :immediately
     notifies :create, 'link[/srv/www/app/current]', :immediately
     notifies :run, 'execute[pm2]', :immediately
@@ -60,6 +61,7 @@ else
     notifies :run, 'execute[app perms]', :immediately
     notifies :run, 'execute[set file perms]', :immediately
     notifies :run, 'execute[npm install]', :immediately
+    notifies :run, 'execute[envS3]', :immediately
     notifies :run, 'execute[telephony]', :immediately
     notifies :create, 'link[/srv/www/app/current]', :immediately
   end
@@ -79,6 +81,13 @@ end
 
 execute 'npm install' do
   command "su - root -c 'cd /srv/www/app/releases/#{release}/ng1 && npm install'"
+  action :nothing
+end
+
+execute 'envS3' do
+  Chef::Log.info("** running typescript compile for envS3...")
+  command "su - root -c 'cd /srv/www/app/releases/#{release}/ng1 && npm run envS3'"
+  Chef::Log.info("** running typescript compile for envS3...done")
   action :nothing
 end
 
