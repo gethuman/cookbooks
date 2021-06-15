@@ -2,6 +2,7 @@ app = search("aws_opsworks_app").first
 instance = search("aws_opsworks_instance", "self:true").first # this gets the databag for the instance
 layers = instance['role'] # the attribute formerly known as 'layers' via opsworks is now found as role in the opsworks instance
 release = Time.now.strftime("%Y%m%d%H%M")
+currentEnv = app['environment'].NODE_ENV
 env_var = ""
 
 # building environment vars
@@ -122,33 +123,33 @@ end
 if layers.include?("batch-layer")
     cron "startPendingCallbacks" do
         minute "*/2"
-        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -n -t startPendingCallbacks -e production"
+        command "cd /srv/www/app/current/ng1 && NODE_ENV=#{currentEnv} /usr/bin/node batch -n -t startPendingCallbacks -e production"
     end
     cron "cleanupCallbacks" do
         minute "*/2"
-        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -n -t cleanupCallbacks -e production"
+        command "cd /srv/www/app/current/ng1 && NODE_ENV=#{currentEnv} /usr/bin/node batch -n -t cleanupCallbacks -e production"
     end
     cron "check.send.company.open.notifications" do
         minute "*/30"
-        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a check.send.company.open.notifications"
+        command "cd /srv/www/app/current/ng1 && NODE_ENV=#{currentEnv} /usr/bin/node batch -e production -a check.send.company.open.notifications"
     end
     cron "check.send.issue.reminders" do
         minute "*/10"
-        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a check.send.issue.reminders"
+        command "cd /srv/www/app/current/ng1 && NODE_ENV=#{currentEnv} /usr/bin/node batch -e production -a check.send.issue.reminders"
     end
     cron "search.reindex" do
         minute "0"
         hour "1"
-        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a search.reindex"
+        command "cd /srv/www/app/current/ng1 && NODE_ENV=#{currentEnv} /usr/bin/node batch -e production -a search.reindex"
     end
     cron "translation.daily" do
         minute "0"
         hour "3"
-        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a translation.daily"
+        command "cd /srv/www/app/current/ng1 && NODE_ENV=#{currentEnv} /usr/bin/node batch -e production -a translation.daily"
     end
     cron "bulldoze.old.issues" do
         minute "0"
-        command "cd /srv/www/app/current/ng1 && /usr/bin/node batch -e production -a bulldoze.old.issues"
+        command "cd /srv/www/app/current/ng1 && NODE_ENV=#{currentEnv} /usr/bin/node batch -e production -a bulldoze.old.issues"
     end
 end
 
